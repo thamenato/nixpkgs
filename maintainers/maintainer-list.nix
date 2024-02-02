@@ -18633,6 +18633,12 @@
     githubId = 102452;
     name = "Niclas Thall";
   };
+  thamenato = {
+    email = "thamenato@gmail.com";
+    github = "thamenato";
+    githubId = 8753631;
+    name = "Thales Menato";
+  };
   thammers = {
     email = "jawr@gmx.de";
     github = "tobias-hammerschmidt";
