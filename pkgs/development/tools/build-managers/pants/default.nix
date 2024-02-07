@@ -1,33 +1,42 @@
 { lib
 ,  stdenv
 , git
-, fetchFromGitHub
-, python39
-, rustup
-, protobuf
+, fetchurl
+ , python39
+#  , autoPatchelfHook
 }:
 
 stdenv.mkDerivation rec {
   pname = "pants";
   version = "2.19.0";
-  pyproject = true;
 
-  src = fetchFromGitHub {
-    owner = "pantsbuild";
-    repo = "pants";
-    rev = "refs/tags/release_${version}";
-    hash = "sha256-cXWchQn7doa71mR0ht5T7xpE+YBm6lYKqRCi9qOuPio=";
+  dontStrip = true;
+  doInstallCheck = true;
+
+  src = fetchurl {
+    url = "https://github.com/pantsbuild/pants/releases/download/release_2.19.0/pants.2.19.0-cp39-linux_x86_64.pex";
+    sha256 = "sha256-XClhLcOjHd1c9FN7SKxeA06DFLhtlDgeRl9UlZ1JE6Q=";
   };
 
-  # preBuild = ''
-  #   export HOME=$(mktemp -d)
-  # '';
-  buildInputs = [ git python39 rustup protobuf ];
+  # nativeBuildInputs = [ autoPatchelfHook ];
+  buildInputs = [ python39 ];
 
-  buildPhase = "bash pants";
+  dontUnpack = true;
+
   installPhase = ''
-    cp -R . $out
-    $out/pants
+    runHook preInstall
+
+    mkdir -p $out/bin
+    cp $src $out/bin/pants
+    chmod +x $out/bin/pants
+
+    runHook postInstall
+  '';
+
+  installCheckPhase = ''
+    export HOME=$(mktemp -d)
+    touch pants.toml
+    $out/bin/pants --version
   '';
 
 
